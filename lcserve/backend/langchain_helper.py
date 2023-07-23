@@ -69,8 +69,7 @@ class TracingCallbackHandlerMixin(BaseCallbackHandler):
         return _span_map.get(run_id)
 
     def _end_span(self, run_id):
-        span = _span_map.pop(run_id, None)
-        if span:
+        if span := _span_map.pop(run_id, None):
             span.end()
 
     def on_llm_start(
@@ -90,10 +89,10 @@ class TracingCallbackHandlerMixin(BaseCallbackHandler):
         try:
             context = set_span_in_context(self.parent_span)
             with self.tracer.start_as_current_span(
-                "llm", context=context, end_on_exit=False
-            ) as span:
+                        "llm", context=context, end_on_exit=False
+                    ) as span:
                 span.set_attribute("otel.operation.name", operation)
-                prompts_len = sum([len(prompt) for prompt in prompts])
+                prompts_len = sum(len(prompt) for prompt in prompts)
                 span.set_attribute("num_processed_prompts", len(prompts))
                 span.set_attribute("prompts_len", prompts_len)
                 span.add_event("prompts", {"data": prompts})

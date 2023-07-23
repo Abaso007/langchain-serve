@@ -39,18 +39,14 @@ def list_files_in_gdrive(
     results = (
         service.files()
         .list(
-            q="'{}' in parents".format(folder_id),
+            q=f"'{folder_id}' in parents",
             pageSize=10,
             fields="nextPageToken, files(id, name, md5Checksum, mimeType, description)",
         )
         .execute()
     )
 
-    items = results.get('files', [])
-
-    if not items:
-        return files
-    else:
+    if items := results.get('files', []):
         for item in items:
             if item['mimeType'] == "application/vnd.google-apps.folder":
                 # If the item is a folder, add its contents to the list.
@@ -58,19 +54,21 @@ def list_files_in_gdrive(
                     service,
                     item['id'],
                     mime_types,
-                    parent_folder_name + '/' + item['name'],
+                    f'{parent_folder_name}/' + item['name'],
                 )
             elif not mime_types or item['mimeType'] in mime_types:
                 # If the item is a file and its MIME type matches, add it to the list.
                 files.append(
                     {
-                        'name': parent_folder_name + '/' + item['name'],
+                        'name': f'{parent_folder_name}/' + item['name'],
                         'id': item['id'],
                         'md5': item['md5Checksum'],
                         'description': item['description'],
                     }
                 )
 
+    else:
+        return files
     return files
 
 
@@ -83,6 +81,6 @@ def download_file(service, file_id, output_file):
     fh = io.FileIO(output_file, 'wb')
     downloader = MediaIoBaseDownload(fh, request)
     done = False
-    while done is False:
+    while not done:
         status, done = downloader.next_chunk()
         print("Download %d%%." % int(status.progress() * 100))

@@ -42,7 +42,7 @@ def prompt_user() -> UserInput:
     # Get goals
     goals = []
     while True:
-        if len(goals) == 0:
+        if not goals:
             goal = Prompt.ask("🧠 Enter goal: (e.g. Solve world hunger)")
         else:
             goal = Prompt.ask("🔧 Enter more goals (if required)")
@@ -91,7 +91,7 @@ def prompt_user() -> UserInput:
     # Get custom tools
     custom_tools_selected = []
     while True:
-        if len(custom_tools_selected) == 0:
+        if not custom_tools_selected:
             create_tool = Prompt.ask(
                 "🔧 Add a custom tool?", default="y", choices=["y", "n"]
             )
@@ -118,7 +118,7 @@ def prompt_user() -> UserInput:
     # Get envs
     envs_selected = {}
     while True:
-        if len(envs_selected) == 0:
+        if not envs_selected:
             add_env = Prompt.ask(
                 "💻 Add an environment variable?", default="y", choices=["y", "n"]
             )

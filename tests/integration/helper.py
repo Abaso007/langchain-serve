@@ -55,12 +55,10 @@ async def deploy_jcloud_fastapi_app(**deployment_args):
     apps_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'fastapi_app')
     sys.path.append(apps_path)
 
-    deployment_args.update(
-        {
-            "fastapi_app_str": "endpoints:app",
-            "app_dir": apps_path,
-        }
-    )
+    deployment_args |= {
+        "fastapi_app_str": "endpoints:app",
+        "app_dir": apps_path,
+    }
     app_id = await _serve_on_jcloud(**deployment_args)
 
     try:
@@ -183,7 +181,6 @@ def assert_jaeger_tracing_data(service, expected_string):
             for field in log["fields"]:
                 if field["key"] == "data" and field["type"] == "string":
                     if expected_string in field["value"]:
-                        assert True
                         return
 
     assert False

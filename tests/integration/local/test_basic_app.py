@@ -263,14 +263,10 @@ def test_metrics_http(run_test_app_locally, route):
 
     start_time = time.time()
     examine_request_duration_with_retry(
-        start_time,
-        expected_value=5,
-        route="/" + route,
+        start_time, expected_value=5, route=f"/{route}"
     )
     examine_request_count_with_retry(
-        start_time,
-        expected_value=1,
-        route="/" + route,
+        start_time, expected_value=1, route=f"/{route}"
     )
 
 
@@ -293,14 +289,10 @@ async def test_metrics_ws(run_test_app_locally, route):
 
     start_time = time.time()
     examine_request_duration_with_retry(
-        start_time,
-        expected_value=5,
-        route="/" + route,
+        start_time, expected_value=5, route=f"/{route}"
     )
     examine_request_count_with_retry(
-        start_time,
-        expected_value=1,
-        route="/" + route,
+        start_time, expected_value=1, route=f"/{route}"
     )
 
 

@@ -98,7 +98,7 @@ async def autogpt(user_input: UserInput, verbose: bool = False):
                                         print(f'Unknown: {msg.data}')
 
                     elif msg.type == aiohttp.WSMsgType.ERROR:
-                        print('ws connection closed with exception %s' % ws.exception())
+                        print(f'ws connection closed with exception {ws.exception()}')
                     else:
                         print(msg)
     except KeyboardInterrupt:

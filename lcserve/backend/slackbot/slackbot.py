@@ -180,8 +180,7 @@ If you can't find the url, please ask the user to provide it to you.
 
         cls._logger.debug(f"Getting slack messages from {url}")
 
-        if url.startswith('url='):
-            url = url[4:]
+        url = url.removeprefix('url=')
         # if url is wrapped with '' or "" or <>, remove them
         if url.startswith("'") and url.endswith("'"):
             url = url[1:-1]
