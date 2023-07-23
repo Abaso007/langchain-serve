@@ -8,7 +8,7 @@ from fastapi import WebSocket
 try:
     from pandasai import PandasAI
     from pandasai.llm.openai import OpenAI
-except (ImportError, ModuleNotFoundError):
+except ImportError:
     print("PandasAI not installed. Please install using `pip install pandasai`")
     exit(1)
 

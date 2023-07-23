@@ -89,13 +89,12 @@ def _agent_base_model_args(executor_kwargs: Dict) -> AgentExecutor:
 
     if 'tools' not in executor_kwargs or not isinstance(executor_kwargs['tools'], dict):
         raise ValueError('tools must be specified in the config')
-    else:
-        tools = executor_kwargs['tools']
-        tools['llm'] = (
-            _get_llm_obj(tools['llm']) if tools.get('llm') else _get_default_llm_obj()
-        )
-        tools = load_tools(**tools)
-        executor_kwargs.pop('tools')
+    tools = executor_kwargs['tools']
+    tools['llm'] = (
+        _get_llm_obj(tools['llm']) if tools.get('llm') else _get_default_llm_obj()
+    )
+    tools = load_tools(**tools)
+    executor_kwargs.pop('tools')
 
     if 'llm' not in executor_kwargs:
         llm = _get_default_llm_obj()
@@ -129,7 +128,7 @@ class ChainExecutor(Executor):
         from docarray import DocumentArray
 
         da = DocumentArray()
-        for k, v in docs_map.items():
+        for v in docs_map.values():
             for doc in v:
                 if doc.id in da:
                     da[doc.id].tags.update(doc.tags)

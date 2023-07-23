@@ -19,11 +19,7 @@ def serving(
         def sync_wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
-        if inspect.iscoroutinefunction(func):
-            wrapper = async_wrapper
-        else:
-            wrapper = sync_wrapper
-
+        wrapper = async_wrapper if inspect.iscoroutinefunction(func) else sync_wrapper
         _args = {
             'name': func.__name__,
             'doc': func.__doc__,
@@ -41,10 +37,7 @@ def serving(
 
         return wrapper
 
-    if _func is None:
-        return decorator
-    else:
-        return decorator(_func)
+    return decorator if _func is None else decorator(_func)
 
 
 def slackbot(
@@ -62,11 +55,7 @@ def slackbot(
         def sync_wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
-        if inspect.iscoroutinefunction(func):
-            wrapper = async_wrapper
-        else:
-            wrapper = sync_wrapper
-
+        wrapper = async_wrapper if inspect.iscoroutinefunction(func) else sync_wrapper
         wrapper.__slackbot__ = {
             'name': func.__name__,
             'doc': func.__doc__,
@@ -78,7 +67,4 @@ def slackbot(
 
         return wrapper
 
-    if _func is None:
-        return decorator
-    else:
-        return decorator(_func)
+    return decorator if _func is None else decorator(_func)

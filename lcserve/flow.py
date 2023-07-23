@@ -117,12 +117,10 @@ def _any_websocket_route_in_app(app: 'FastAPI') -> bool:
 
 
 def _any_websocket_router_in_module(module: ModuleType) -> bool:
-    # Go through the module and find all functions decorated by `serving` decorator
-    for _, func in inspect.getmembers(module, inspect.isfunction):
-        if hasattr(func, '__ws_serving__'):
-            return True
-
-    return False
+    return any(
+        hasattr(func, '__ws_serving__')
+        for _, func in inspect.getmembers(module, inspect.isfunction)
+    )
 
 
 def get_uri(id: str, tag: str):
@@ -331,10 +329,7 @@ def _push_to_hubble(
         args_list.remove('--no-usage')
         args_list.append('--verbose')
     if not public:
-        args_list.append('--secret')
-        args_list.append(secret)
-        args_list.append('--private')
-
+        args_list.extend(('--secret', secret, '--private'))
     args = set_hub_push_parser().parse_args(args_list)
 
     if platform:
@@ -348,7 +343,7 @@ def _push_to_hubble(
     )
     with EnvironmentVarCtxtManager(push_envs):
         gateway_id = HubIO(args).push().get('id')
-        return gateway_id + ':' + tag
+        return f'{gateway_id}:{tag}'
 
 
 def push_app_to_hubble(
@@ -613,7 +608,7 @@ def export_app(
         f.to_kubernetes_yaml(path)
     elif kind == ExportKind.DOCKER_COMPOSE:
         _path = Path(path)
-        if _path.is_file() and _path.suffix in ['.yml', '.yaml']:
+        if _path.is_file() and _path.suffix in {'.yml', '.yaml'}:
             f.to_docker_compose_yaml(path)
         elif _path.is_dir():
             f.to_docker_compose_yaml(os.path.join(path, 'docker-compose.yml'))
@@ -646,7 +641,7 @@ async def deploy_app_on_jcloud(
                 await jcloud_flow.update()
 
         for k, v in jcloud_flow.endpoints.items():
-            if k.lower() == 'gateway (http)' or k.lower() == 'gateway (websocket)':
+            if k.lower() in ['gateway (http)', 'gateway (websocket)']:
                 return app_id, v
 
     return None, None
@@ -739,7 +734,7 @@ async def list_apps_on_jcloud(phase: str, name: str):
     )
 
     console = Console()
-    with console.status(f'[bold]Listing all apps'):
+    with console.status('[bold]Listing all apps'):
         all_apps = await CloudFlow().list_all(
             phase=phase, name=name, labels=f'app={APP_NAME}'
         )
